@@ -1,6 +1,7 @@
 const cells = document.querySelectorAll(".cell");
 let board = ["", "", "", "", "", "", "", "", ""];
 let currentPlayer = "X";
+let playAgainstAI = false;  // Variable to track if we're playing against AI
 
 // Function to update the board visually
 function updateBoard() {
@@ -13,12 +14,20 @@ function updateBoard() {
 function handleClick(e) {
     const index = e.target.getAttribute("data-index");
 
-    if (board[index] === "" && currentPlayer === "X") {
+    // If the cell is empty and it's player X's turn or player O's turn in PvP mode
+    if (board[index] === "" && (currentPlayer === "X" || !playAgainstAI)) {
         board[index] = currentPlayer;
         updateBoard();
+
         if (!checkWinner()) {
-            currentPlayer = "O";
-            setTimeout(computerMove, 500);  // Let the computer take its turn after a short delay
+            // If we are playing against AI, the computer will make its move
+            if (playAgainstAI && currentPlayer === "X") {
+                currentPlayer = "O";  // Switch to computer
+                setTimeout(computerMove, 500);  // Computer takes its turn after a short delay
+            } else {
+                // Switch turn to the other player in Player vs Player mode
+                currentPlayer = currentPlayer === "X" ? "O" : "X";
+            }
         }
     }
 }
@@ -85,6 +94,36 @@ function computerMove() {
     }
 }
 
+// Function to check for a winner
+function checkWinner() {
+    const winningCombos = [
+        [0, 1, 2], [3, 4, 5], [6, 7, 8],  // Rows
+        [0, 3, 6], [1, 4, 7], [2, 5, 8],  // Columns
+        [0, 4, 8], [2, 4, 6]              // Diagonals
+    ];
+
+    for (const combo of winningCombos) {
+        const [a, b, c] = combo;
+        if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+            setTimeout(() => {
+                alert(`Player ${board[a]} wins!`);
+                resetGame();
+            }, 100);
+            return true;
+        }
+    }
+
+    if (!board.includes("")) {
+        setTimeout(() => {
+            alert("It's a draw!");
+            resetGame();
+        }, 100);
+        return true;
+    }
+
+    return false;
+}
+
 // Function to check for a winner (used by the AI)
 function checkWinnerAI(newBoard) {
     const winningCombos = [
@@ -102,28 +141,6 @@ function checkWinnerAI(newBoard) {
     return null;
 }
 
-// Function to check for a winner in the game
-function checkWinner() {
-    const winner = checkWinnerAI(board);
-    if (winner) {
-        setTimeout(() => {
-            alert(`Player ${winner} wins!`);
-            resetGame();
-        }, 100);
-        return true;
-    }
-
-    if (!board.includes("")) {
-        setTimeout(() => {
-            alert("It's a draw!");
-            resetGame();
-        }, 100);
-        return true;
-    }
-
-    return false;
-}
-
 // Function to reset the game
 function resetGame() {
     board = ["", "", "", "", "", "", "", "", ""];
@@ -135,3 +152,13 @@ function resetGame() {
 cells.forEach(cell => {
     cell.addEventListener('click', handleClick);
 });
+
+// Toggle between Player vs Player and Player vs AI
+document.getElementById("toggle-ai").addEventListener("click", () => {
+    playAgainstAI = !playAgainstAI;  // Toggle AI mode
+    document.getElementById("toggle-ai").textContent = playAgainstAI ? "Play Against Computer: ON" : "Play Against Computer: OFF";
+    resetGame();  // Reset the game when toggling modes
+});
+
+// Reset button functionality
+document.getElementById("reset").addEventListener("click", resetGame);
