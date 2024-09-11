@@ -19,16 +19,24 @@ function checkWinner() {
   for (const combo of winningCombos) {
     const [a, b, c] = combo;
     if (board[a] && board[a] === board[b] && board[a] === board[c]) {
-      alert(`Player ${currentPlayer} wins!`);
-      resetGame();
-      return;
+      // Delay the popup so the final move is shown
+      setTimeout(() => {
+        alert(`Player ${currentPlayer} wins!`);
+        resetGame();
+      }, 100);  // Small delay (100 ms)
+      return true;
     }
   }
 
   if (!board.includes("")) {
-    alert("It's a draw!");
-    resetGame();
+    setTimeout(() => {
+      alert("It's a draw!");
+      resetGame();
+    }, 100);  // Small delay (100 ms)
+    return true;
   }
+
+  return false;
 }
 
 // Function to handle cell clicks
@@ -38,8 +46,10 @@ function handleClick(e) {
   if (board[index] === "") {
     board[index] = currentPlayer;
     e.target.textContent = currentPlayer;
-    checkWinner();
-    currentPlayer = currentPlayer === "X" ? "O" : "X";
+
+    if (!checkWinner()) {
+      currentPlayer = currentPlayer === "X" ? "O" : "X";  // Toggle player
+    }
   }
 }
 
