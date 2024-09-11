@@ -1,29 +1,40 @@
+/* Center the board on the screen */
 body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
     font-family: Arial, sans-serif;
-    text-align: center;
 }
 
+/* Style the Tic-Tac-Toe board */
 #board {
     display: grid;
     grid-template-columns: repeat(3, 100px);
     grid-template-rows: repeat(3, 100px);
-    gap: 10px;
-    justify-content: center;
-    margin: 20px auto;
+    gap: 5px;
 }
 
+/* Style each cell */
 .cell {
+    width: 100px;
+    height: 100px;
     background-color: #f0f0f0;
+    border: 2px solid #333;
     display: flex;
-    justify-content: center;
     align-items: center;
-    font-size: 2em;
+    justify-content: center;
+    font-size: 36px;
+    font-weight: bold;
     cursor: pointer;
 }
 
-#reset {
+/* Style buttons */
+button {
     margin-top: 20px;
     padding: 10px 20px;
-    font-size: 1em;
+    font-size: 16px;
     cursor: pointer;
 }
